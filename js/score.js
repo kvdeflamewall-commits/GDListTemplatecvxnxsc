@@ -10,6 +10,50 @@ const scale = 3;
  * @param {Number} minPercent Minimum percentage required
  * @returns {Number}
  */
+let N = 0;
+
+/**
+ * Fetches data/_list.json, counts the levels, and updates variable N.
+ * @param {string} listPath - Path to _list.json (defaults to "data/_list.json")
+ * @param {function(number): void} [onUpdate] - Optional callback run once N is updated
+ */
+async function getLevelCount(listPath = "data/_list.json", onUpdate) {
+  try {
+    const response = await fetch(listPath, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status} while fetching ${listPath}`);
+    }
+
+    const levels = await response.json();
+
+    if (!Array.isArray(levels)) {
+      throw new Error("_list.json does not contain a JSON array.");
+    }
+
+    N = levels.length;
+
+    if (typeof onUpdate === "function") {
+      onUpdate(N);
+    }
+
+    return N;
+  } catch (err) {
+    console.error("Failed to count levels:", err);
+    N = 0;
+    return N;
+  }
+}
+
+// Example usage: display N in the console and/or a DOM element
+getLevelCount("data/_list.json", (count) => {
+  console.log("Total levels (N):", count); // Will log 3 for ["SampleLevel1", "SAMPLELEVEL2", "Sample_Level_3"]
+
+  // Optional: display N inside an HTML element like <span id="level-count"></span>
+  const el = document.getElementById("level-count");
+  if (el) {
+    el.textContent = N;
+  }
+});
 export function score(rank, percent, minPercent) {
     if (rank > 150) {
         return 0;
