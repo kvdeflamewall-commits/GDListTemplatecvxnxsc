@@ -10,30 +10,30 @@ const scale = 3;
  * @param {Number} minPercent Minimum percentage required
  * @returns {Number}
  */
-export function score(rank, percent, minPercent) {
-    if (rank > 150) {
-        return 0;
-    }
-    if (rank > 75 && percent < 100) {
-        return 0;
-    }
+export function score(rank, percent, minPercent) { //[cite: 4, 5]
+  if (rank > 150) { //[cite: 4, 5]
+    return 0; //[cite: 4, 5]
+  } //[cite: 4, 5]
+  if (rank > 75 && percent < 100) { //[cite: 4, 5]
+    return 0; //[cite: 4, 5]
+  } //[cite: 4, 5]
 
-    // Old formula
-    /*
-    let score = (100 / Math.sqrt((rank - 1) / 50 + 0.444444) - 50) *
-        ((percent - (minPercent - 1)) / (100 - (minPercent - 1)));
-    */
-    // New formula
-    let score = (-24.9975*Math.pow(rank-1, 0.4) + 200) *
-        ((percent - (minPercent - 1)) / (100 - (minPercent - 1)));
+  // New formula: P(r) = 350 * (1/7)^((r - 1) / (N - 1))[cite: 1, 2]
+  const r = rank; //[cite: 2]
+  const basePoints = N > 1 ? 350 * Math.pow(1 / 7, (r - 1) / (N - 1)) : 350; //[cite: 1, 2]
 
-    score = Math.max(0, score);
+  let score =
+    basePoints *
+    ((percent - (minPercent - 1)) / (100 - (minPercent - 1))); //[cite: 5]
 
-    if (percent != 100) {
-        return round(score - score / 3);
-    }
+  score = Math.max(0, score); //[cite: 5]
 
-    return Math.max(round(score), 0);
+  if (percent !== 100) { //[cite: 5]
+    return round(score - score / 3); //[cite: 5]
+  } //[cite: 5]
+
+  return Math.max(round(score), 0); //[cite: 5]
+} //[cite: 5]
 }
 
 export function round(num) {
